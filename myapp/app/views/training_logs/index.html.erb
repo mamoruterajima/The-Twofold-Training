@@ -1,0 +1,78 @@
+<p style="color: green"><%= notice %></p>
+
+<% content_for :title, "トレーニング記録一覧" %>
+
+<h1>トレーニング記録</h1>
+
+<nav style="margin-bottom: 20px; padding: 10px; background: #f4f4f4;">
+  <strong>部位で絞り込む:</strong>
+  <% ["胸", "肩", "腹", "腕", "背中", "足"].each do |part| %>
+    <%= link_to part, training_logs_path(body_part: part), style: "margin-right: 10px; text-decoration: none; border: 1px solid #ccc; padding: 5px 10px; border-radius: 5px;" %>
+  <% end %>
+  <%= link_to "すべて", training_logs_path, style: "color: red;" %>
+</nav>
+
+<%= link_to "新しい記録を付ける", new_training_log_path, style: "font-size: 1.2em; font-weight: bold;" %>
+
+<div style="margin-bottom: 30px; padding: 15px; background: #fff; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+  <% if @training_logs.any? %>
+    <%# グラフのタイトルを動的に変更（例：背中の成長記録） %>
+    <h2 style="font-size: 1.2em; margin-top: 0;">
+      <%= params[:body_part].present? ? params[:body_part] : "全" %>部位の成長記録 (MAX重量)
+    </h2>
+
+    <%# line_chart メソッド1行でグラフが描画されます %>
+    <%# 現在表示されている @training_logs データを使って集計 %>
+    <%= line_chart @training_logs.group(:exercise_name).group_by_day(:workout_date).maximum(:weight), 
+                   xtitle: "日付", 
+                   ytitle: "重量 (kg)", 
+                   points: true, 
+                   curve: false, # 折れ線グラフにする
+                   library: { 
+                     animation: { duration: 1000 }, # アニメーションを追加
+                     scales: { y: { beginAtZero: false } } # Y軸を0から始めない（変化を強調）
+                   } %>
+  <% else %>
+    <p>グラフを表示するデータがありません。</p>
+  <% end %>
+
+</div>
+<div style="margin-bottom: 30px; padding: 15px; background: #fff; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+  <% if @training_logs.any? %>
+    <%# グラフのタイトルを動的に変更（例：背中の成長記録） %>
+    <h2 style="font-size: 1.2em; margin-top: 0;">
+      <%= params[:body_part].present? ? params[:body_part] : "全" %>部位の成長記録 (レップ数)
+    </h2>
+
+    <%# line_chart メソッド1行でグラフが描画 %>
+    <%# 現在表示されている @training_logs データを使って集計 %>
+    <%= line_chart @training_logs.group(:exercise_name).group_by_day(:workout_date).maximum(:reps1), 
+                   xtitle: "日付", 
+                   ytitle: "重量 (kg)", 
+                   points: true, 
+                   curve: false, # 直線にする（成長が分かりやすい）
+                   library: { 
+                     animation: { duration: 1000 }, # アニメーションを追加
+                     scales: { y: { beginAtZero: false } } # Y軸を0から始めない（変化を強調）
+                   } %>
+  <% else %>
+    <p>グラフを表示するデータがありません。</p>
+  <% end %>
+
+</div>
+<hr>
+
+<div id="training_logs">
+  <% @training_logs.each do |training_log| %>
+    <div style="border-bottom: 1px solid #eee; padding: 10px 0;">
+      <strong><%= training_log.workout_date %></strong> | 
+      <span style="color: #555;">[<%= training_log.body_part %>]</span>
+      <strong><%= training_log.exercise_name %></strong> : 
+      <%= training_log.weight %>kg × <%= training_log.reps1 %>rep (<%= training_log.sets %>set)
+      
+      <p>
+        <%= link_to "詳細を見る", training_log %>
+      </p>
+    </div>
+  <% end %>
+</div>

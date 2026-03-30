@@ -1,0 +1,2 @@
+class TrainingLog < ApplicationRecord
+end
