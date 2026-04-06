@@ -1,4 +1,4 @@
-# 10. EC2インスタンス本体
+# EC2インスタンス本体
 resource "aws_instance" "myapp-ec2-instance" {
   ami           = "ami-0b4a1b07f9ca13717" # Amazon Linux 2023
   instance_type = "t3.micro"
@@ -24,7 +24,7 @@ resource "aws_instance" "myapp-ec2-instance" {
   }
 }
 
-# 11. ECRリポジトリ（Dockerイメージの保管庫）
+# ECRリポジトリ（Dockerイメージの保管庫）
 resource "aws_ecr_repository" "myapp_repo" {
   name                 = "myapp-repository"
   image_tag_mutability = "MUTABLE"
@@ -57,4 +57,61 @@ resource "aws_ecr_lifecycle_policy" "myapp_repo_policy" {
     ]
 }
 EOF
+}
+
+# ALB本体
+resource "aws_lb" "main" {
+  name               = "myapp-alb"
+  internal           = false
+  load_balancer_type = "application"
+  security_groups    = [aws_security_group.alb_sg.id]
+  subnets            = [aws_subnet.public_subnet.id, aws_subnet.db_subnet_c.id] # 2つのAZが必要
+}
+
+# ターゲットグループ（EC2のポート3000へ流す）
+resource "aws_lb_target_group" "main" {
+  name     = "myapp-tg"
+  port     = 3000
+  protocol = "HTTP"
+  vpc_id   = aws_vpc.myapp_vpc.id
+  health_check { path = "/" }
+}
+
+# ALBリスナー（ここで「合言葉」を確認する）
+resource "aws_lb_listener" "http" {
+  load_balancer_arn = aws_lb.main.arn
+  port              = "80"
+  protocol          = "HTTP"
+
+  default_action {
+    type = "fixed-response"
+    fixed_response {
+      content_type = "text/plain"
+      message_body = "Access Denied: Invalid Header"
+      status_code  = "403"
+    }
+  }
+}
+
+# 合言葉が一致した時だけEC2へ流すルール
+resource "aws_lb_listener_rule" "allow_cloudfront" {
+  listener_arn = aws_lb_listener.http.arn
+  priority     = 1
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.main.arn
+  }
+  condition {
+    http_header {
+      http_header_name = "X-Custom-Header"
+      values           = [var.cloudfront_custom_header_value]
+    }
+  }
+}
+
+# EC2とターゲットグループの紐付け
+resource "aws_lb_target_group_attachment" "main" {
+  target_group_arn = aws_lb_target_group.main.arn
+  target_id        = aws_instance.myapp-ec2-instance.id
+  port             = 3000
 }

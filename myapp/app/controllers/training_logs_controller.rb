@@ -3,19 +3,19 @@ class TrainingLogsController < ApplicationController
 
   # GET /training_logs or /training_logs.json
   def index
-  # @training_logs = TrainingLog.all
+    @training_logs = current_user.training_logs
   
   if params[:body_part].present?
     # URLに部位が指定されていたら、その部位だけで絞り込む
-    @training_logs = TrainingLog.where(body_part: params[:body_part]).order(workout_date: :desc)
+    @training_logs = @training_logs.where(body_part: params[:body_part]).order(workout_date: :desc)
   else
     # 指定がなければ全部出す（日付が新しい順）
-    @training_logs = TrainingLog.all.order(workout_date: :desc)  # 一旦全期間集計。今後運用して調整
+    @training_logs = @training_logs.all.order(workout_date: :desc)  # 一旦全期間集計。今後運用して調整
   end
 end
   def last_record
     # 種目名で検索して、最新の1件を取得
-    record = TrainingLog.where(exercise_name: params[:exercise_name]).order(workout_date: :desc).first
+    record = @training_logs.where(exercise_name: params[:exercise_name]).order(workout_date: :desc).first
     
     # データをJSONで返す（データがない場合は null が返る）
     render json: record
@@ -36,7 +36,7 @@ end
 
   # POST /training_logs or /training_logs.json
   def create
-    @training_log = TrainingLog.new(training_log_params)
+    @training_log = current_user.training_logs.build(training_log_params)
 
     respond_to do |format|
       if @training_log.save

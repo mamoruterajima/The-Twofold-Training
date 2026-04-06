@@ -1,4 +1,4 @@
-# 1. IAMロール本体の作成
+# IAMロール本体の作成
 resource "aws_iam_role" "ec2_role" {
   name = "myapp-ec2-role-v2"
 
@@ -17,19 +17,19 @@ resource "aws_iam_role" "ec2_role" {
   })
 }
 
-# 2. ECR読み取り権限のアタッチ
+# ECR読み取り権限のアタッチ
 resource "aws_iam_role_policy_attachment" "ecr_readonly" {
   role       = aws_iam_role.ec2_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
 }
 
-# 3. SSM操作権限のアタッチ
+# SSM操作権限のアタッチ
 resource "aws_iam_role_policy_attachment" "ssm_managed" {
   role       = aws_iam_role.ec2_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
 
-# 4. EC2にアタッチ用インスタンスプロフィール
+# EC2にアタッチ用インスタンスプロフィール
 resource "aws_iam_instance_profile" "ec2_profile" {
   name = "myapp-ec2-instance-profile-v2"
   role = aws_iam_role.ec2_role.name

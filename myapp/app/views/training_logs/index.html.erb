@@ -4,6 +4,11 @@
 
 <h1>トレーニング記録</h1>
 
+<% if user_signed_in? %>
+  <p>ログイン中: <%= current_user.email %></p>
+  <%= link_to 'ログアウト', destroy_user_session_path, data: { "turbo-method": :delete }, class: 'btn btn-danger' %>
+<% end %>
+
 <nav style="margin-bottom: 20px; padding: 10px; background: #f4f4f4;">
   <strong>部位で絞り込む:</strong>
   <% ["胸", "肩", "腹", "腕", "背中", "足"].each do |part| %>
@@ -29,6 +34,7 @@
                    points: true, 
                    curve: false, # 折れ線グラフにする
                    library: { 
+                     spanGaps: true, # データが飛んでいる日も線を繋ぐ
                      animation: { duration: 1000 }, # アニメーションを追加
                      scales: { y: { beginAtZero: false } } # Y軸を0から始めない（変化を強調）
                    } %>
@@ -48,10 +54,11 @@
     <%# 現在表示されている @training_logs データを使って集計 %>
     <%= line_chart @training_logs.group(:exercise_name).group_by_day(:workout_date).maximum(:reps1), 
                    xtitle: "日付", 
-                   ytitle: "重量 (kg)", 
+                   ytitle: "レップ数", 
                    points: true, 
                    curve: false, # 直線にする（成長が分かりやすい）
                    library: { 
+                     spanGaps: true, # データが飛んでいる日も線を繋ぐ
                      animation: { duration: 1000 }, # アニメーションを追加
                      scales: { y: { beginAtZero: false } } # Y軸を0から始めない（変化を強調）
                    } %>

@@ -74,3 +74,6 @@ end
 gem "chartkick"
 # 日付ごとの集計を楽にするGem
 gem "groupdate"
+
+# ログインのGem
+gem 'devise'

@@ -1,17 +1,17 @@
 Rails.application.routes.draw do
-  resources :training_logs do
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+  get "home/index"
+  devise_for :users, controllers: {
+    sessions: 'users/sessions'
+  }
 
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
-  get:last_record, on: :collection
+  # ゲストログイン用のルーティングを追加
+  devise_scope :user do
+    post 'users/guest_sign_in', to: 'users/sessions#guest_sign_in'
   end
-  # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
-  # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
-  # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
-  # Defines the root path route ("/")
-  # root "posts#index"
-  # これを追加！
+  resources :training_logs do
+    get :last_record, on: :collection
+  end
+
   root "training_logs#index"
 end

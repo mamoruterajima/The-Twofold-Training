@@ -26,7 +26,7 @@ resource "aws_db_instance" "myapp_db" {
   instance_class       = "db.t3.micro" # 無料枠
   db_name              = "myapp_production"
   username             = "admin"
-  password             = "password123"
+  password             = var.db_password
   skip_final_snapshot  = true # 容量削減のためスナップショットは取らない
   db_subnet_group_name = aws_db_subnet_group.db_sg.name
   vpc_security_group_ids = [aws_security_group.db_sg.id]

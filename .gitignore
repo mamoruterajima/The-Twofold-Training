@@ -3,6 +3,7 @@
 *.tfstate*
 .terraform.lock.hcl
 *.exe
+*.pem
 
 # Rails
 /myapp/config/master.key
@@ -23,6 +24,20 @@ myapp/log/*.log
 myapp/tmp/cache/
 myapp/public/assets
 myapp/vendor/bundle
+myapp/config/database.yml
+
+# DBの実データ（うっかり入らないように）
+myapp/db/*.sqlite3
+myapp/db/*.sqlite3-journal
+
+# ユーザーがアップロードした画像（ストレージ容量を食うため）
+myapp/storage/*
+!myapp/storage/.keep
+myapp/public/uploads
+
+# Mac/Windows特有のゴミファイル（他人がクローンした時に邪魔にならないように）
+.DS_Store
+desktop.ini
 
 # --- OS / IDE ---
 .DS_Store

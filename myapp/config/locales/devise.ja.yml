@@ -1,0 +1,13 @@
+ja:
+  activerecord:
+    attributes:
+      user:
+        email: "メールアドレス"
+        password: "パスワード"
+        password_confirmation: "パスワード（確認用）"
+  devise:
+    sessions:
+      signed_in: "ログインしました。"
+    common:
+      log_in: "ログイン"
+      sign_up: "新規登録"
