@@ -95,4 +95,8 @@ Rails.application.configure do
     config.active_job.queue_adapter = :inline
     config.cache_store = :memory_store
   end
+
+  if ENV['ALLOWED_HOSTS'].present?
+    config.hosts.concat ENV['ALLOWED_HOSTS'].split(',')
+  end
 end

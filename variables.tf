@@ -19,3 +19,14 @@ variable "db_password" {
   type        = string
   sensitive   = true
 }
+
+variable "aws_account_id" {
+  description = "AWS Account ID (12 digits)"
+  type        = string
+}
+
+variable "rails_master_key" {
+  description = "Rails Master Key"
+  type        = string
+  sensitive   = true # ログに出力されないように設定
+}

@@ -1,26 +1,17 @@
 # EC2用SG
 resource "aws_security_group" "ec2_sg" {
   name        = "myapp-ec2-sg"
-  description = "Allow HTTP and SSH traffic"
   vpc_id      = aws_vpc.myapp_vpc.id
 
-  # HTTP (80): ブラウザからの標準アクセス
+  # ALBからのHTTP通信(80)のみを許可
   ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  # Rails (3000): 直接起動確認用
-  ingress {
-    from_port       = 3000
-    to_port         = 3000
+    from_port       = 80
+    to_port         = 80
     protocol        = "tcp"
-    security_groups = [aws_security_group.alb_sg.id] # ALBからのみ通す
+    security_groups = [aws_security_group.alb_sg.id] 
   }
 
-  # SSH (22): 管理用
+  # SSH (22): 特定のIPからのみ許可
   ingress {
     from_port   = 22
     to_port     = 22
@@ -28,7 +19,6 @@ resource "aws_security_group" "ec2_sg" {
     cidr_blocks = ["${var.my_ip}/32"]
   }
 
-  # Egress: 外へ通信
   egress {
     from_port   = 0
     to_port     = 0

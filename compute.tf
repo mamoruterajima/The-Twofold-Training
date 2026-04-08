@@ -17,6 +17,25 @@ resource "aws_instance" "myapp-ec2-instance" {
               systemctl start docker
               systemctl enable docker
               usermod -aG docker ec2-user
+
+              # 1. ECRにログイン（AWS CLIが必要なため、インスタンスプロファイル経由で実行）
+              aws ecr get-login-password --region ap-northeast-1 | docker login --username AWS --password-stdin ${var.aws_account_id}.dkr.ecr.ap-northeast-1.amazonaws.com
+
+              # 2. 最新のイメージをプル
+              docker pull ${aws_ecr_repository.myapp_repo.repository_url}:latest
+
+              # 3. 実行中のコンテナがあれば停止（再起動用）
+              docker stop myapp || true
+              docker rm myapp || true
+
+              # 4. コンテナ起動（環境変数を注入）
+              # ALBのDNS名とCloudFrontのドメイン名をALLOWED_HOSTSに自動設定
+              docker run -d \
+                --name myapp \
+                -p 80:3000 \
+                -e RAILS_MASTER_KEY=${var.rails_master_key} \
+                -e ALLOWED_HOSTS="${aws_lb.main.dns_name},${aws_cloudfront_distribution.s3_distribution.domain_name}" \
+                ${aws_ecr_repository.myapp_repo.repository_url}:latest
               EOF
 
   tags = {
@@ -71,10 +90,21 @@ resource "aws_lb" "main" {
 # ターゲットグループ（EC2のポート3000へ流す）
 resource "aws_lb_target_group" "main" {
   name     = "myapp-tg"
-  port     = 3000
+  port     = 80        # ここを3000から80へ。Dockerの待ち受けに合わせる
   protocol = "HTTP"
   vpc_id   = aws_vpc.myapp_vpc.id
-  health_check { path = "/" }
+
+  health_check {
+    path                = "/"
+    protocol            = "HTTP"
+    port                = "traffic-port"
+    healthy_threshold   = 3
+    unhealthy_threshold = 2
+    timeout             = 5
+    interval            = 30
+    # 302も正常として認める設定をコードで明示
+    matcher             = "200,302" 
+  }
 }
 
 # ALBリスナー（ここで「合言葉」を確認する）
