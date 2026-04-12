@@ -114,7 +114,8 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
     allowed_methods        = ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]
     cached_methods   = ["GET", "HEAD"]
     target_origin_id = "myALBOrigin"
-    
+    viewer_protocol_policy = "redirect-to-https"
+
     # 署名付きURLを強制
     # trusted_key_groups = [aws_cloudfront_key_group.example.id]
 
@@ -123,7 +124,6 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
       cookies { forward = "all" }
       headers = ["Accept", "Accept-Language", "Origin", "Referer"]
     }
-    # viewer_protocol_policy = "redirect-to-https"
   }
 
   restrictions { 

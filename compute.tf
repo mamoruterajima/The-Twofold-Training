@@ -101,7 +101,7 @@ resource "aws_lb_target_group" "main" {
   vpc_id   = aws_vpc.myapp_vpc.id
 
   health_check {
-    path                = "/"
+    path                = "/up"
     protocol            = "HTTP"
     port                = "traffic-port"
     healthy_threshold   = 3
