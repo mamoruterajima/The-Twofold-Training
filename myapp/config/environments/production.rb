@@ -101,7 +101,7 @@ Rails.application.configure do
   if ENV['ALLOWED_HOSTS'].present?
     config.hosts.concat ENV['ALLOWED_HOSTS'].split(',')
   end
-  config.hosts << /.*\.amazonaws\.com/
+  config.hosts << /.*\.ap-northeast-1\.elb\.amazonaws\.com/
   config.hosts << /.*\.cloudfront\.net/
-
+  # config.hosts << /.*/
 end
