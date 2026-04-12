@@ -97,7 +97,7 @@ Rails.application.configure do
   end
 
   config.hosts.clear
-
+  config.hosts << "deynpzpt1ipne.cloudfront.net"
   if ENV['ALLOWED_HOSTS'].present?
     config.hosts.concat ENV['ALLOWED_HOSTS'].split(',')
   end

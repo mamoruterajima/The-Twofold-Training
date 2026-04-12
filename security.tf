@@ -122,7 +122,7 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
     forwarded_values {
       query_string = true
       cookies { forward = "all" }
-      headers = ["Accept", "Accept-Language", "Origin", "Referer"]
+      headers = ["Host", "Accept", "Accept-Language", "Origin", "Referer"]
     }
   }
 
