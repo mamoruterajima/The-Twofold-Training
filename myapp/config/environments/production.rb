@@ -98,11 +98,11 @@ Rails.application.configure do
 
   config.host_authorization = false
   config.hosts.clear
-  config.hosts << "deynpzpt1ipne.cloudfront.net"
-  if ENV['ALLOWED_HOSTS'].present?
-    config.hosts.concat ENV['ALLOWED_HOSTS'].split(',')
-  end
-  config.hosts << /.*\.ap-northeast-1\.elb\.amazonaws\.com/
-  config.hosts << /.*\.cloudfront\.net/
-  # config.hosts << /.*/
+  # config.hosts << "deynpzpt1ipne.cloudfront.net"
+  # if ENV['ALLOWED_HOSTS'].present?
+  #   config.hosts.concat ENV['ALLOWED_HOSTS'].split(',')
+  # end
+  # config.hosts << /.*\.ap-northeast-1\.elb\.amazonaws\.com/
+  # config.hosts << /.*\.cloudfront\.net/
+  config.hosts << /.*/
 end
