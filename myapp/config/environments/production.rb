@@ -91,10 +91,10 @@ Rails.application.configure do
   config.assets.initialize_on_precompile = false
   config.active_record.attributes_for_inspect = [ :id ]
   # ビルド時にSolid QueueのDB接続エラーを回避
-  if ENV["SECRET_KEY_BASE_DUMMY"]
-    config.active_job.queue_adapter = :inline
-    config.cache_store = :memory_store
-  end
+  # if ENV["SECRET_KEY_BASE_DUMMY"]
+  #   config.active_job.queue_adapter = :inline
+  #   config.cache_store = :memory_store
+  # end
 
   config.host_authorization = false
   config.hosts.clear
