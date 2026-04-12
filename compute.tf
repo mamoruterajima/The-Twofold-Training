@@ -33,6 +33,7 @@ resource "aws_instance" "myapp-ec2-instance" {
               docker run -d \
                 --name myapp \
                 -p 80:3000 \
+                -e RAILS_ENV=production \
                 -e RAILS_MASTER_KEY=${var.rails_master_key} \
                 -e ALLOWED_HOSTS="${aws_lb.main.dns_name},${aws_cloudfront_distribution.s3_distribution.domain_name}" \
                 ${aws_ecr_repository.myapp_repo.repository_url}:latest
@@ -84,7 +85,12 @@ resource "aws_lb" "main" {
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb_sg.id]
-  subnets            = [aws_subnet.public_subnet.id, aws_subnet.db_subnet_c.id] # 2つのAZが必要
+  
+  # DB用ではなく、もう一つのパブリックなサブネットを指定する
+  subnets            = [
+    aws_subnet.public_subnet.id, 
+    aws_subnet.db_subnet_c.id # ← ここをパブリックなものに変更
+  ]
 }
 
 # ターゲットグループ（EC2のポート3000へ流す）
@@ -143,5 +149,13 @@ resource "aws_lb_listener_rule" "allow_cloudfront" {
 resource "aws_lb_target_group_attachment" "main" {
   target_group_arn = aws_lb_target_group.main.arn
   target_id        = aws_instance.myapp-ec2-instance.id
-  port             = 3000
+  port             = 80
+}
+
+output "cloudfront_url" {
+  value = aws_cloudfront_distribution.s3_distribution.domain_name
+}
+
+output "ec2_public_ip" {
+  value = aws_instance.myapp-ec2-instance.public_ip
 }

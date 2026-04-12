@@ -8,7 +8,8 @@ resource "aws_security_group" "ec2_sg" {
     from_port       = 80
     to_port         = 80
     protocol        = "tcp"
-    security_groups = [aws_security_group.alb_sg.id] 
+    security_groups = [aws_security_group.alb_sg.id]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   # SSH (22): 特定のIPからのみ許可
@@ -110,18 +111,19 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
   is_ipv6_enabled = true
 
   default_cache_behavior {
-    allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
+    allowed_methods        = ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]
     cached_methods   = ["GET", "HEAD"]
     target_origin_id = "myALBOrigin"
     
     # 署名付きURLを強制
-    trusted_key_groups = [aws_cloudfront_key_group.example.id]
+    # trusted_key_groups = [aws_cloudfront_key_group.example.id]
 
     forwarded_values {
       query_string = true
       cookies { forward = "all" }
+      headers = ["Accept", "Accept-Language", "Origin", "Referer"]
     }
-    viewer_protocol_policy = "redirect-to-https"
+    # viewer_protocol_policy = "redirect-to-https"
   }
 
   restrictions { 
