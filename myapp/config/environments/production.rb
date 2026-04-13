@@ -101,7 +101,7 @@ Rails.application.configure do
   #   config.cache_store = :solid_cache_store
   # end
 
-  config.host_authorization = false
+  # config.host_authorization = false
   config.hosts.clear
   config.hosts << "dav6664r4nqja.cloudfront.net"
   if ENV['ALLOWED_HOSTS'].present?
