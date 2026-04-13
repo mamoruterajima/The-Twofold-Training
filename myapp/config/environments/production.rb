@@ -47,7 +47,7 @@ Rails.application.configure do
   config.active_support.report_deprecations = false
 
   # Replace the default in-process memory cache store with a durable alternative.
-  # config.cache_store = :solid_cache_store
+  config.cache_store = :solid_cache_store
 
   # Replace the default in-process and non-durable queuing backend for Active Job.
   config.active_job.queue_adapter = :solid_queue
@@ -91,15 +91,15 @@ Rails.application.configure do
   config.assets.initialize_on_precompile = false
   config.active_record.attributes_for_inspect = [ :id ]
   # ビルド時にSolid QueueのDB接続エラーを回避
-  if ENV["SECRET_KEY_BASE_DUMMY"]
+  # if ENV["SECRET_KEY_BASE_DUMMY"]
     # 【ビルド中】DBに繋がない（保存されないが、ビルドは通る）
-    config.active_job.queue_adapter = :inline
-    config.cache_store = :memory_store
-  else
+  #   config.active_job.queue_adapter = :inline
+  #   config.cache_store = :memory_store
+  # else
     # 【本番実行時】ちゃんとDBに繋ぐ（データはRDSに保存される）
-    config.active_job.queue_adapter = :solid_queue
-    config.cache_store = :solid_cache_store
-  end
+  #   config.active_job.queue_adapter = :solid_queue
+  #   config.cache_store = :solid_cache_store
+  # end
 
   config.host_authorization = false
   config.hosts.clear
