@@ -45,3 +45,15 @@ production:
 #    <<: *default
 #    database: storage/production_cable.sqlite3
 #    migrations_paths: db/cable_migrate
+  primary:
+    adapter: sqlite3
+    database: storage/production.sqlite3
+  cable: 
+    adapter: sqlite3
+    database: storage/production_cable.sqlite3
+  cache: 
+    adapter: sqlite3
+    database: storage/production_cache.sqlite3
+  queue: 
+    adapter: sqlite3
+    database: storage/production_queue.sqlite3
