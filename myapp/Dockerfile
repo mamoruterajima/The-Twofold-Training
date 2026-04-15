@@ -23,4 +23,4 @@ RUN chmod +x bin/* && \
 RUN RAILS_ENV=production SECRET_KEY_BASE_DUMMY=1 \
     bundle exec rake assets:precompile
 
-CMD ["bundle", "exec", "rails", "s", "-p", "3000", "-b", "0.0.0.0"]
+CMD ["sh", "-c", "bundle exec rails s -e ${RAILS_ENV:-production} -p 3000 -b 0.0.0.0"]

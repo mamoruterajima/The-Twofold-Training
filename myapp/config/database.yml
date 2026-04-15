@@ -23,13 +23,22 @@ test:
 # Store production database in the storage/ directory, which by default
 # is mounted as a persistent Docker volume in config/deploy.yml.
 production:
-  adapter: postgresql # または mysql2
-  encoding: unicode
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  host: <%= ENV['DATABASE_HOST'] %>
-  database: <%= ENV['DATABASE_NAME'] %>
-  username: <%= ENV['DATABASE_USER'] %>
-  password: <%= ENV['DATABASE_PASSWORD'] %>
+  primary: &default
+    adapter: sqlite3
+    database: storage/production.sqlite3
+  cable:
+    <<: *default
+    database: storage/production_cable.sqlite3
+  cache:
+    <<: *default
+    database: storage/production_cache.sqlite3
+#   adapter: postgresql # または mysql2
+#   encoding: unicode
+#   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+#   host: <%= ENV['DATABASE_HOST'] %>
+#   database: <%= ENV['DATABASE_NAME'] %>
+#   username: <%= ENV['DATABASE_USER'] %>
+#   password: <%= ENV['DATABASE_PASSWORD'] %>
 #  primary:
 #    <<: *default
 #    database: storage/production.sqlite3
@@ -45,15 +54,3 @@ production:
 #    <<: *default
 #    database: storage/production_cable.sqlite3
 #    migrations_paths: db/cable_migrate
-  primary:
-    adapter: sqlite3
-    database: storage/production.sqlite3
-  cable: 
-    adapter: sqlite3
-    database: storage/production_cable.sqlite3
-  cache: 
-    adapter: sqlite3
-    database: storage/production_cache.sqlite3
-  queue: 
-    adapter: sqlite3
-    database: storage/production_queue.sqlite3
