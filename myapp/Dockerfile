@@ -6,6 +6,7 @@ RUN apt-get update -qq && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
+ENV RAILS_ENV=production
 
 # Gemインストール
 COPY Gemfile Gemfile.lock ./
