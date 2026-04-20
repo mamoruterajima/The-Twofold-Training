@@ -24,4 +24,5 @@ RUN chmod +x bin/* && \
 RUN RAILS_ENV=production SECRET_KEY_BASE_DUMMY=1 \
     bundle exec rake assets:precompile
 
-CMD ["sh", "-c", "bundle exec rails s -e ${RAILS_ENV:-production} -p 3000 -b 0.0.0.0"]
+# CMD ["sh", "-c", "mkdir -p storage tmp/pids && rm -f tmp/pids/server.pid && bundle exec rails db:prepare && bundle exec rails s -e production -p 3000 -b 0.0.0.0"]
+CMD ["sh", "-c", "mkdir -p storage tmp/pids && rm -f tmp/pids/server.pid && (bundle exec rails db:migrate || bundle exec rails db:schema:load) && bundle exec rails s -e production -p 3000 -b 0.0.0.0"]
