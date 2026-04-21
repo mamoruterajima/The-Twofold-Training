@@ -11,17 +11,16 @@
 ### バックエンド / フロントエンド
 - **Ruby on Rails 8.0.1** (Propshaft / Importmaps)
 - **SQLite3** (Active Storage / Action Text 動作確認済)
-- **Devise: ユーザー認証基盤
+- **Devise**: ユーザー認証基盤
 
 ### Infrastructure (AWS)
 - **Amazon EC2**: アプリケーション実行基盤
 - **Amazon ECR**: Dockerイメージの管理
-- **AWS Systems Manager (SSM)**: 安全なデプロイ操作（ポート22未開放）
 - **Terraform**: インフラのコード化（ネットワーク、IAM、セキュリティグループ）
-- **Amazon CloudFront: 署名付きURL（Signed URL）による特定ユーザーへのセキュアなコンテンツ配信
-- **Application Load Balancer (ALB): カスタムヘッダー認証によるオリジンガード
-- **Amazon RDS: マルチAZ配置を想定したデータベース運用 (現在意図的に除外中)
-- **AWS Budgets: コストアラート設定（月額5ドル制限）
+- **Amazon CloudFront**: 署名付きURL（Signed URL）による特定ユーザーへのセキュアなコンテンツ配信
+- **Application Load Balancer (ALB)**: カスタムヘッダー認証によるオリジンガード
+- **Amazon RDS**: マルチAZ配置を想定したデータベース運用 (コスト制約により現在は未採用　※将来的に導入予定）)
+- **AWS Budgets**: コストアラート設定（月額5ドル制限）
 
 ### CI/CD
 - **GitHub Actions**: 
@@ -30,14 +29,12 @@
   - AWS Systems Manager (SSM): セキュアな自動デプロイ（22番ポート未開放運用）
 
 ## 🏗 インフラ構成のこだわり
-- **Security First**: 
-  SSH（22番ポート）をインターネットに公開せず、AWS SSM を経由してデプロイを実行する構成を採用。外部からの攻撃ベクトルを最小限に抑えています。
 - **IaCによる再現性**: 
   Terraformを用いることで、環境の構築・破棄をコマンド一発で完結。コスト管理と環境の一貫性を両立しました。
 - **Dockerコンテナによる可搬性**: 
   開発環境と本番環境の差異をなくすため、Rails 8 の Docker 構成をベースとしたコンテナ運用を行っています。
-- **Zero Exposure**: 
-  SSH（22番ポート）をインターネットに公開せず、AWS SSM 経由で操作を完結。外部からの攻撃ベクトルを最小限に抑えています。
+- **IP制限付きSSHによる最小公開構成**: 
+  SSH接続は特定のIPからのみ許可　※将来的にSSM移行を検討
 - **Double-Layered Origin Shield**: 
   CloudFront で署名付きURLを強制し、未認証ユーザーをエッジで遮断。 ALB と CloudFront 間にカスタムヘッダー認証を実装。CloudFront を経由しない直接アクセスを ALB レベルで拒否する設定を構築。
 - **Cost Management**: 
@@ -56,3 +53,8 @@
 
 
 トレーニングの視覚化（グラフ機能） 記録した内容は自動でグラフ化。過去の自分との比較や、強度の向上を視覚的に確認でき、モチベーション維持をサポートします。
+
+### 課題と改善
+- **本番環境設定が反映されない問題**: コンテナ・環境変数・IaCの責務を整理し解決
+- **デプロイの不安定さ**: Docker起動フローを見直し安定化
+- **グラフ描画の不具合**: データ構造から再設計
