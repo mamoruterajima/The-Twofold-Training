@@ -35,12 +35,12 @@ resource "aws_instance" "myapp-ec2-instance" {
                 -p 80:3000 \
                 -e RAILS_ENV=production \
                 -e RACK_ENV=production \
-                -e RAILS_ASSUME_SSL=true
-                -e RAILS_FORCE_SSL=true
+                -e RAILS_ASSUME_SSL=true \
+                -e RAILS_FORCE_SSL=true \
                 -e RAILS_MASTER_KEY=${var.rails_master_key} \
                 -e ALLOWED_HOSTS="${aws_lb.main.dns_name},${aws_cloudfront_distribution.s3_distribution.domain_name}" \
-                ${aws_ecr_repository.myapp_repo.repository_url}:latest
-                bash -c "rm -f tmp/pids/server.pid && bundle exec rails db:prepare && bundle exec rails s -e production -p 3000 -b 0.0.0.0"
+                ${aws_ecr_repository.myapp_repo.repository_url}:latest \
+                # bash -c "rm -f tmp/pids/server.pid && bundle exec rails db:prepare && bundle exec rails s -e production -p 3000 -b 0.0.0.0"
               EOF
 
   tags = {
