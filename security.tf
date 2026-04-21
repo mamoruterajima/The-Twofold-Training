@@ -117,7 +117,7 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
     viewer_protocol_policy = "redirect-to-https"
 
     # 署名付きURLを強制
-    trusted_key_groups = [aws_cloudfront_key_group.example.id]
+    # trusted_key_groups = [aws_cloudfront_key_group.example.id]
 
     forwarded_values {
       query_string = true
